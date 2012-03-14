@@ -144,14 +144,14 @@ void searchdir( char *dn, char *findme, int bitpat)
 	}
 
 	/* Allocate memory for pointer array */
-	fnames = malloc(numents * sizeof(char *));
+	fnames = emalloc(numents * sizeof(char *));
 
 	/* Store directory name */
 	size_t len;
 	errno = 0;
 	while ((dentry = readdir(dirstr))) {
 		len = strlen(dentry->d_name);
-		fnames[fnpos] = malloc(len+1);
+		fnames[fnpos] = emalloc(len+1);
 		strcpy(fnames[fnpos], dentry->d_name);
 		fnpos++;
 	}
@@ -167,14 +167,16 @@ void searchdir( char *dn, char *findme, int bitpat)
 	int i;
 	for (i = 0; i < numents; i++) {
 		char *fn = fnames[i];
-		char *path = buildPath(dn, fn, dnlen);
 
 		if (strcmp(fn, ".") == 0 || strcmp(fn, "..") == 0)
 			continue;
 
+		char *path = buildPath(dn, fn, dnlen);
 		int chk = checkFile(path, fn, findme, bitpat);
-		if ( chk == 1)
+		if ( chk == 1) {
+			free(path);
 			continue;
+		}
 
 		free(path);
 	}
@@ -194,7 +196,7 @@ char *buildPath( char *dn, char *filename, int dnlen)
 {
 	int fnlen = strlen(filename);
 	int pnlen = dnlen + 2 + fnlen;
-	char *path = malloc(pnlen);
+	char *path = emalloc(pnlen);
 
 	snprintf(path, pnlen, "%s/%s", dn, filename);
 
@@ -252,7 +254,6 @@ int checkFile( char *path, char *filename, char *findme, int bitpat )
  * This function terminates the program if malloc() fails.
  */
 void *emalloc( size_t size )
-//TODO (PM) Fully implement this function into the program
 {
 	void *p;
 
