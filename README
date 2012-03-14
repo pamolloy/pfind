@@ -1,0 +1,76 @@
+NAME
+    pfind - a simplified version of `find'
+
+SYNOPSIS
+    pfind [path] [ -name <expression>] [ -type <c>]
+
+DESCRIPTION
+    This simplified version of the find command. It accepts three
+    optional arguments; path, expression and type.
+
+    Exactly one starting directory must be specified.
+
+    Each option may be specified in its long form, with either a single
+    or double dash, or in its short form, which consists of a single
+    dash and the first character of the flag name. A long option may
+    take a parameter, of the form --arg=param or --arg param.
+
+    If any a flag appears more than once pfind prints a syntax error to
+    standard error.
+
+DATA STRUCTURES
+    Memory is allocated by malloc when building a new path for a
+    subdirectory using the buildPath function and for the pointer array
+    that is created in the search dir function. In the later case a
+    chunk of memory is allocated based on the number of entries in a
+    directory and the size of a character pointer. Then the filename
+    in each entry is stored in a separate chunk of memory, the address
+    of which is stored in the first chunk of memory (i.e. the "pointer
+    array").
+
+REQUIRED
+    The find application uses fnmatch() to check whether a file or
+    directory matches the pattern argument. This is also referenced in
+    The Open Group base specification of find. However, the GNU manual
+    states that using `fnmatch` "would be slow (and complex, since you
+    would have to handle subdirectories by hand)."[1] Despite its
+    recommendation, glob provides far more functionality than is
+    necessary here.
+
+    lstat is used instead of stat because following hard links may lead
+    the application to run in a recursive loop if the link points to a
+    file or directory higher in the directory tree.
+
+    1. http://www.gnu.org/software/libc/manual/html_node/Globbing.html
+
+EXAMPLE
+    Recursively search the directory `/home/s/smith' for a file named
+    `core' of any type.
+        $ pfind /home/s/smith -name core
+
+    Recursively search the current working directory for a regular file
+    with a name ending in `.c'.
+        $ pfind . -name \*.c -type f
+
+    Print the path for all files and subdirectories. It does not stop
+    until it has searched all subdirectories.
+        $ pfind cscie215/hw
+
+BUGS
+    Since this simplified version of find uses getopt to parse options
+    in the command line, the errors that are printed for invalid or
+    missing flags differ from that of GNU find. For example, pfind will
+    print:
+        pfind: option `-name' requires an argument
+    to stderr, while find will print:
+        find: missing argument to `-name'
+
+    The searchdir and checkFile functions exceed the maximum function
+    length of 30 lines by 33 and 11 lines each.
+
+    The error handling for the access function on line 224 does not
+    check errno. Instead it assumes if an error occurred it was a
+    permission error.
+
+CREDIT
+    Philip Molloy

@@ -1,0 +1,23 @@
+RECURSIVE PROGRAMS
+    Other unix programs that operate recursively on directory trees
+    include chown, rsync, scp, tree, dir, and vdir.
+
+    dir     dir -R      List contents of subdirectories recursively
+    tree    tree        List contents of directories in a tree-like
+                        format
+    scp     scp -r      Recursively copy entire directories over SSH
+                        and it follows symbolic links
+    rsync   rsync -r    Recursively copy the contents of directories
+    chown   chown -R    Change the user and/or group of files and
+                        directories recursively
+
+    The tree application will recursively list the contents of
+    directories by default, but it also has a -R flag, which will
+    execute itself once it has reached a user defined depth in the
+    directory tree.
+
+    The mount application has a set of flags to recursively change the
+    type of all mounts under a given mountpoint.
+
+    Other applications I found by searching die.net include clamscan,
+    gconftool, ifnotifywatch, wget, diff, dnotify, and feh.
